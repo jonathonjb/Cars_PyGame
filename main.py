@@ -3,33 +3,42 @@ from mapGenerator import MapGenerator
 from vehicle import Vehicle
 
 FRAMES_PER_SECOND = 30
-TILE_SIZE = 20
+MIN_TILE_SIZE = 13
+MAX_TILE_SIZE = 30
 
 SCREEN_WIDTH_APPROX = 800
 SCREEN_HEIGHT_APPROX = 600
 
 def main():
     pg.init()
-    numOfXTiles, numOfYTiles, screen = initializeScreen()
+    pg.font.init()
+    scoreFont = pg.font.SysFont(None, 100)
+
     clock = pg.time.Clock()
 
-
-    vehicleStartX = TILE_SIZE
-    vehicleStartY = numOfYTiles / 2 * TILE_SIZE
-
+    currTileSize = MAX_TILE_SIZE + 1
+    score = -1
+    lives = 5
     gameIsRunning = True
+
     while(gameIsRunning):
+        score += 1
+        if(currTileSize != MIN_TILE_SIZE):
+            currTileSize -=1
 
-        vehicleX = vehicleStartX
-        vehicleY = vehicleStartY
+        numOfXTiles, numOfYTiles, screen = initializeScreen(currTileSize)
+        vehicleStartX = currTileSize
+        vehicleStartY = numOfYTiles / 2 * currTileSize
 
-        mapGenerator = MapGenerator(TILE_SIZE, numOfXTiles, numOfYTiles)
+        mapGenerator = MapGenerator(currTileSize, numOfXTiles, numOfYTiles)
         roadTiles, landTiles, flag = mapGenerator.generateMap()
-        vehicle = Vehicle(vehicleX, vehicleY)
+        vehicle = Vehicle(vehicleStartX, vehicleStartY)
 
         mapSprites = pg.sprite.RenderPlain((roadTiles, landTiles))
         vehicleSprite = pg.sprite.RenderPlain((vehicle))
         flagSprite = pg.sprite.RenderPlain((flag))
+
+        scoreText = scoreFont.render(str(score), False, (0, 0, 255))
 
         roundIsRunning = True
         while(gameIsRunning and roundIsRunning):
@@ -42,6 +51,10 @@ def main():
             mapSprites.draw(screen)
             flagSprite.draw(screen)
             vehicleSprite.draw(screen)
+            screen.blit(scoreText, (10, 10))
+
+            livesText = scoreFont.render(str(lives), False, (0, 0, 255))
+            screen.blit(livesText, (730, 10))
 
             if (pg.sprite.spritecollide(vehicle, flagSprite, True)):
                 roundIsRunning = False
@@ -50,8 +63,15 @@ def main():
                 for sprite in flagSprite:
                     sprite.kill()
 
-            if(pg.sprite.spritecollide(vehicle, landTiles, False)):
-                vehicle.restart()
+            if(pg.sprite.spritecollide(vehicle, landTiles, False) or
+                    vehicle.rect.left < 0 or vehicle.rect.right > SCREEN_WIDTH_APPROX or
+                    vehicle.rect.top < 0 or vehicle.rect.bottom > SCREEN_HEIGHT_APPROX):
+                lives -= 1
+                if(lives <= 0):
+                    gameIsRunning = False
+                    roundIsRunning = False
+                else:
+                    vehicle.restart()
 
             pg.display.flip()
 
@@ -81,11 +101,11 @@ def eventListener(gameIsRunning, vehicle):
     return gameIsRunning
 
 
-def initializeScreen():
-    numOfXTiles = int(SCREEN_WIDTH_APPROX / TILE_SIZE)
-    numOfYTiles = int(SCREEN_HEIGHT_APPROX / TILE_SIZE)
-    screenWidth = TILE_SIZE * numOfXTiles
-    screenHeight = TILE_SIZE * numOfYTiles
+def initializeScreen(tileSize):
+    numOfXTiles = int(SCREEN_WIDTH_APPROX / tileSize)
+    numOfYTiles = int(SCREEN_HEIGHT_APPROX / tileSize)
+    screenWidth = tileSize * numOfXTiles
+    screenHeight = tileSize * numOfYTiles
     screen = pg.display.set_mode((screenWidth, screenHeight))
     return numOfXTiles, numOfYTiles, screen
 
