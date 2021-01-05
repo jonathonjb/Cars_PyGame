@@ -15,16 +15,20 @@ TURN_SPEED = 2
 class Vehicle(pg.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
+        self.startX = x
+        self.startY = y
+
         self.originalImage, self.rect = toolkit.load_image('car.png', -1)
         self.image = self.originalImage
+
+        self.initialize(x, y)
+
+    def initialize(self, x, y):
         self.rect.center = x, y
-
-        self.degrees = 0                        # current degrees of the image (0-359)
+        self.degrees = 0  # current degrees of the image (0-359)
         self.speed = 0
-
         self.accelerationStatus = 'decelerate'  # accelerate, decelerate or reverse
-        self.turningStatus = 'straight'         # straight, left, or right
-
+        self.turningStatus = 'straight'  # straight, left, or right
 
     def update(self):
         if(self.accelerationStatus == 'accelerate'):
@@ -45,6 +49,9 @@ class Vehicle(pg.sprite.Sprite):
         xDiff = self.speed * math.cos(-math.radians(self.degrees ))
         yDiff = self.speed * math.sin(-math.radians(self.degrees))
         self.rect.move_ip(xDiff, yDiff)
+
+    def restart(self):
+        self.initialize(self.startX, self.startY)
 
     def accelerate(self):
         if(self.speed < MAX_SPEED):

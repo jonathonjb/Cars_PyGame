@@ -3,7 +3,7 @@ from mapGenerator import MapGenerator
 from vehicle import Vehicle
 
 FRAMES_PER_SECOND = 30
-TILE_SIZE = 20
+TILE_SIZE = 15
 
 SCREEN_WIDTH_APPROX = 800
 SCREEN_HEIGHT_APPROX = 600
@@ -31,17 +31,20 @@ def main():
     while(gameIsRunning):
         clock.tick(FRAMES_PER_SECOND)
 
-        gameIsRunning = listenForEvent(gameIsRunning, vehicle)
+        gameIsRunning = eventListener(gameIsRunning, vehicle)
 
         vehicleSprite.update()
 
         mapSprites.draw(screen)
         vehicleSprite.draw(screen)
 
+        if(pg.sprite.spritecollide(vehicle, landTiles, False)):
+            vehicle.restart()
+
         pg.display.flip()
 
 
-def listenForEvent(gameIsRunning, vehicle):
+def eventListener(gameIsRunning, vehicle):
     for event in pg.event.get():
         if (event.type == pg.QUIT):
             gameIsRunning = False

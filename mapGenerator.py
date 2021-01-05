@@ -4,8 +4,8 @@ import random
 from roadTile import RoadTile
 from landTile import LandTile
 
-LIKELIHOOD_OF_TURNS = 0.9
-MIN_TILES_BETWEEN_TURNS = 15
+LIKELIHOOD_OF_TURNS = .5
+MIN_TILES_BETWEEN_TURNS =10
 
 class MapGenerator:
     def __init__(self, tileSize, numOfTilesX, numOfTilesY):
