@@ -13,11 +13,15 @@ def main():
     numOfXTiles, numOfYTiles, screen = initializeScreen()
     clock = pg.time.Clock()
 
+    vehicleX = TILE_SIZE
+    vehicleY = numOfYTiles / 2 * TILE_SIZE
+
     mapGenerator = MapGenerator(TILE_SIZE, numOfXTiles, numOfYTiles)
     roadTiles, landTiles = mapGenerator.generateMap()
-    vehicle = Vehicle()
+    vehicle = Vehicle(vehicleX, vehicleY)
 
-    sprites = pg.sprite.RenderPlain((roadTiles, landTiles, vehicle))
+    mapSprites = pg.sprite.RenderPlain((roadTiles, landTiles))
+    vehicleSprite = pg.sprite.RenderPlain((vehicle))
 
     gameIsRunning = True
     while(gameIsRunning):
@@ -26,8 +30,29 @@ def main():
         for event in pg.event.get():
             if(event.type == pg.QUIT):
                 gameIsRunning = False
+            elif(event.type == pg.KEYDOWN):
+                if(event.key == pg.K_w):
+                    vehicle.accelerationStatus = 'accelerate'
+                elif(event.key == pg.K_s):
+                    vehicle.accelerationStatus = 'reverse'
+                elif (event.key == pg.K_d):
+                    vehicle.turningStatus = 'right'
+                elif (event.key == pg.K_a):
+                    vehicle.turningStatus = 'left'
+            elif(event.type == pg.KEYUP):
+                if (event.key == pg.K_w):
+                    vehicle.accelerationStatus = 'decelerate'
+                elif (event.key == pg.K_s):
+                    vehicle.accelerationStatus = 'decelerate'
+                elif (event.key == pg.K_d):
+                    vehicle.turningStatus = 'straight'
+                elif (event.key == pg.K_a):
+                    vehicle.turningStatus = 'straight'
 
-        sprites.draw(screen)
+        vehicleSprite.update()
+
+        mapSprites.draw(screen)
+        vehicleSprite.draw(screen)
 
         pg.display.flip()
 

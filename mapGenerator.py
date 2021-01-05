@@ -4,7 +4,7 @@ import random
 from roadTile import RoadTile
 from landTile import LandTile
 
-LIKEHOOD_OF_TURNS = 0.9
+LIKELIHOOD_OF_TURNS = 0.9
 MIN_TILES_BETWEEN_TURNS = 15
 
 class MapGenerator:
@@ -30,7 +30,7 @@ class MapGenerator:
     def generateRoadTiles(self, roadTiles, roadWidth, tilesAdded):
         # The ith tile, NOT USING PIXELS. So 3 means 3rd tile of TILE_SIZE
         xTileCurr = 0
-        yTileCurr = int(self.numOfTilesY / 2) - roadWidth
+        yTileCurr = int(self.numOfTilesY / 2) - (roadWidth / 2)
         xTileChange = 1
         yTileChange = 0
         tilesSinceTurn = 0
@@ -47,7 +47,7 @@ class MapGenerator:
             tilesSinceTurn += 1
             if (tilesSinceTurn >= MIN_TILES_BETWEEN_TURNS):
                 randNum = random.random()
-                if (randNum >= 1 - (LIKEHOOD_OF_TURNS / 2)):
+                if (randNum >= 1 - (LIKELIHOOD_OF_TURNS / 2)):
                     # Turning right
                     newXTileChange = -yTileChange
                     newYTileChange = xTileChange
@@ -55,7 +55,7 @@ class MapGenerator:
                     xTileChange = newXTileChange
                     yTileChange = newYTileChange
 
-                elif (randNum >= 1 - LIKEHOOD_OF_TURNS):
+                elif (randNum >= 1 - LIKELIHOOD_OF_TURNS):
                     # Turning left
                     xTileCurr -= (xTileChange * roadWidth)
                     yTileCurr -= (yTileChange * roadWidth)
