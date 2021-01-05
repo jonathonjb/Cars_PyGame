@@ -13,8 +13,12 @@ def main():
     numOfXTiles, numOfYTiles, screen = initializeScreen()
     clock = pg.time.Clock()
 
-    vehicleX = TILE_SIZE
-    vehicleY = numOfYTiles / 2 * TILE_SIZE
+
+    vehicleStartX = TILE_SIZE
+    vehicleStartY = numOfYTiles / 2 * TILE_SIZE
+
+    vehicleX = vehicleStartX
+    vehicleY = vehicleStartY
 
     mapGenerator = MapGenerator(TILE_SIZE, numOfXTiles, numOfYTiles)
     roadTiles, landTiles = mapGenerator.generateMap()
@@ -27,27 +31,7 @@ def main():
     while(gameIsRunning):
         clock.tick(FRAMES_PER_SECOND)
 
-        for event in pg.event.get():
-            if(event.type == pg.QUIT):
-                gameIsRunning = False
-            elif(event.type == pg.KEYDOWN):
-                if(event.key == pg.K_w):
-                    vehicle.accelerationStatus = 'accelerate'
-                elif(event.key == pg.K_s):
-                    vehicle.accelerationStatus = 'reverse'
-                elif (event.key == pg.K_d):
-                    vehicle.turningStatus = 'right'
-                elif (event.key == pg.K_a):
-                    vehicle.turningStatus = 'left'
-            elif(event.type == pg.KEYUP):
-                if (event.key == pg.K_w):
-                    vehicle.accelerationStatus = 'decelerate'
-                elif (event.key == pg.K_s):
-                    vehicle.accelerationStatus = 'decelerate'
-                elif (event.key == pg.K_d):
-                    vehicle.turningStatus = 'straight'
-                elif (event.key == pg.K_a):
-                    vehicle.turningStatus = 'straight'
+        gameIsRunning = listenForEvent(gameIsRunning, vehicle)
 
         vehicleSprite.update()
 
@@ -55,6 +39,31 @@ def main():
         vehicleSprite.draw(screen)
 
         pg.display.flip()
+
+
+def listenForEvent(gameIsRunning, vehicle):
+    for event in pg.event.get():
+        if (event.type == pg.QUIT):
+            gameIsRunning = False
+        elif (event.type == pg.KEYDOWN):
+            if (event.key == pg.K_w):
+                vehicle.accelerationStatus = 'accelerate'
+            elif (event.key == pg.K_s):
+                vehicle.accelerationStatus = 'reverse'
+            elif (event.key == pg.K_d):
+                vehicle.turningStatus = 'right'
+            elif (event.key == pg.K_a):
+                vehicle.turningStatus = 'left'
+        elif (event.type == pg.KEYUP):
+            if (event.key == pg.K_w):
+                vehicle.accelerationStatus = 'decelerate'
+            elif (event.key == pg.K_s):
+                vehicle.accelerationStatus = 'decelerate'
+            elif (event.key == pg.K_d):
+                vehicle.turningStatus = 'straight'
+            elif (event.key == pg.K_a):
+                vehicle.turningStatus = 'straight'
+    return gameIsRunning
 
 
 def initializeScreen():

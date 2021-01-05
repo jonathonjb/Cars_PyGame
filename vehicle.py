@@ -10,16 +10,16 @@ REVERSE_SPEED_INCREASE = 0.5
 
 DECELERATION_DECREASE = 0.95
 
-TURN_SPEED = 1
+TURN_SPEED = 2
 
 class Vehicle(pg.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image, self.rect = toolkit.load_image('car.png', -1)
+        self.originalImage, self.rect = toolkit.load_image('car.png', -1)
+        self.image = self.originalImage
         self.rect.center = x, y
 
-        self.degrees = 0
-        self.rotation = 0
+        self.degrees = 0                        # current degrees of the image (0-359)
         self.speed = 0
 
         self.accelerationStatus = 'decelerate'  # accelerate, decelerate or reverse
@@ -34,18 +34,17 @@ class Vehicle(pg.sprite.Sprite):
         elif(self.accelerationStatus == 'reverse'):
             self.reverse()
 
-        if(self.turningStatus == 'straight'):
-            self.endTurn()
-        elif(self.turningStatus == 'left'):
+        if(self.turningStatus == 'left'):
             self.turnLeft()
         elif(self.turningStatus == 'right'):
             self.turnRight()
 
 
-        self.image = pg.transform.rotate(self.image, self.rotation)
-        xDiff = self.speed * math.cos(math.radians(self.degrees))
-        yDiff = self.speed * math.sin(math.radians(self.degrees))
-        newPos = self.rect.move_ip(xDiff, yDiff)
+        # self.image = pg.transform.rotate(self.image, self.degrees)            # Does some really fckn weird shit
+        self.image = pg.transform.rotate(self.originalImage, self.degrees)
+        xDiff = self.speed * math.cos(-math.radians(self.degrees ))
+        yDiff = self.speed * math.sin(-math.radians(self.degrees))
+        self.rect.move_ip(xDiff, yDiff)
 
     def accelerate(self):
         if(self.speed < MAX_SPEED):
@@ -56,16 +55,10 @@ class Vehicle(pg.sprite.Sprite):
             self.speed -= REVERSE_SPEED_INCREASE
 
     def turnLeft(self):
-        self.degrees = self.degrees - TURN_SPEED % 360
-        self.rotation = -TURN_SPEED
+        self.degrees = self.degrees + TURN_SPEED % 360
 
     def turnRight(self):
-        self.degrees = self.degrees + TURN_SPEED % 360
-        self.rotation = TURN_SPEED
+        self.degrees = self.degrees - TURN_SPEED % 360
 
     def decelerate(self):
         self.speed *= DECELERATION_DECREASE
-
-    def endTurn(self):
-        self.degrees = 0
-        self.rotation = 0
