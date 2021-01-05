@@ -3,7 +3,7 @@ from mapGenerator import MapGenerator
 from vehicle import Vehicle
 
 FRAMES_PER_SECOND = 30
-TILE_SIZE = 15
+TILE_SIZE = 20
 
 SCREEN_WIDTH_APPROX = 800
 SCREEN_HEIGHT_APPROX = 600
@@ -17,31 +17,43 @@ def main():
     vehicleStartX = TILE_SIZE
     vehicleStartY = numOfYTiles / 2 * TILE_SIZE
 
-    vehicleX = vehicleStartX
-    vehicleY = vehicleStartY
-
-    mapGenerator = MapGenerator(TILE_SIZE, numOfXTiles, numOfYTiles)
-    roadTiles, landTiles = mapGenerator.generateMap()
-    vehicle = Vehicle(vehicleX, vehicleY)
-
-    mapSprites = pg.sprite.RenderPlain((roadTiles, landTiles))
-    vehicleSprite = pg.sprite.RenderPlain((vehicle))
-
     gameIsRunning = True
     while(gameIsRunning):
-        clock.tick(FRAMES_PER_SECOND)
 
-        gameIsRunning = eventListener(gameIsRunning, vehicle)
+        vehicleX = vehicleStartX
+        vehicleY = vehicleStartY
 
-        vehicleSprite.update()
+        mapGenerator = MapGenerator(TILE_SIZE, numOfXTiles, numOfYTiles)
+        roadTiles, landTiles, flag = mapGenerator.generateMap()
+        vehicle = Vehicle(vehicleX, vehicleY)
 
-        mapSprites.draw(screen)
-        vehicleSprite.draw(screen)
+        mapSprites = pg.sprite.RenderPlain((roadTiles, landTiles))
+        vehicleSprite = pg.sprite.RenderPlain((vehicle))
+        flagSprite = pg.sprite.RenderPlain((flag))
 
-        if(pg.sprite.spritecollide(vehicle, landTiles, False)):
-            vehicle.restart()
+        roundIsRunning = True
+        while(gameIsRunning and roundIsRunning):
+            clock.tick(FRAMES_PER_SECOND)
 
-        pg.display.flip()
+            gameIsRunning = eventListener(gameIsRunning, vehicle)
+
+            vehicleSprite.update()
+
+            mapSprites.draw(screen)
+            flagSprite.draw(screen)
+            vehicleSprite.draw(screen)
+
+            if (pg.sprite.spritecollide(vehicle, flagSprite, True)):
+                roundIsRunning = False
+                for sprite in mapSprites:
+                    sprite.kill()
+                for sprite in flagSprite:
+                    sprite.kill()
+
+            if(pg.sprite.spritecollide(vehicle, landTiles, False)):
+                vehicle.restart()
+
+            pg.display.flip()
 
 
 def eventListener(gameIsRunning, vehicle):

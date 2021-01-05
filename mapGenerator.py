@@ -3,6 +3,7 @@ import random
 
 from roadTile import RoadTile
 from landTile import LandTile
+from flag import Flag
 
 LIKELIHOOD_OF_TURNS = .5
 MIN_TILES_BETWEEN_TURNS =10
@@ -22,10 +23,10 @@ class MapGenerator:
         roadTiles = pg.sprite.Group()
         landTiles = pg.sprite.Group()
 
-        self.generateRoadTiles(roadTiles, roadWidth, tilesAdded)
+        flag = self.generateRoadTiles(roadTiles, roadWidth, tilesAdded)
         self.generateLandTiles(landTiles, tilesAdded)
 
-        return roadTiles, landTiles
+        return roadTiles, landTiles, flag
 
     def generateRoadTiles(self, roadTiles, roadWidth, tilesAdded):
         # The ith tile, NOT USING PIXELS. So 3 means 3rd tile of TILE_SIZE
@@ -68,6 +69,17 @@ class MapGenerator:
                 tilesSinceTurn = 0
             if (xTileCurr < 0 or xTileCurr > self.numOfTilesX or yTileCurr < 0 or yTileCurr > self.numOfTilesY):
                 break
+
+        xTileCurr += (-yTileChange * (roadWidth / 2))
+        yTileCurr += (xTileChange * (roadWidth / 2))
+
+        # ythTile = yTileCurr + (xTileChange * j)
+
+        flagX = xTileCurr * self.tileSize + 2 * (-xTileChange * self.tileSize)
+        flagY = yTileCurr * self.tileSize + 2 * (-yTileChange * self.tileSize)
+
+        flag = Flag(flagX, flagY)
+        return flag
 
     def generateLandTiles(self, landTiles, tilesAdded):
         # Creates land on non-road tiles

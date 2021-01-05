@@ -2,15 +2,15 @@ import pygame as pg
 import toolkit
 import math
 
-MAX_SPEED = 7
-REVERSE_MAX_SPEED = 2
+MAX_SPEED = 8
+REVERSE_MAX_SPEED = 4
 
 ACCELERATION_SPEED_INCREASE = 1
 REVERSE_SPEED_INCREASE = 0.5
 
 DECELERATION_DECREASE = 0.95
 
-TURN_SPEED = 2
+TURN_SPEED_PROPORTION = 0.8
 
 class Vehicle(pg.sprite.Sprite):
     def __init__(self, x, y):
@@ -62,10 +62,10 @@ class Vehicle(pg.sprite.Sprite):
             self.speed -= REVERSE_SPEED_INCREASE
 
     def turnLeft(self):
-        self.degrees = self.degrees + TURN_SPEED % 360
+        self.degrees = self.degrees + (self.speed * TURN_SPEED_PROPORTION) % 360
 
     def turnRight(self):
-        self.degrees = self.degrees - TURN_SPEED % 360
+        self.degrees = self.degrees - (self.speed * TURN_SPEED_PROPORTION) % 360
 
     def decelerate(self):
         self.speed *= DECELERATION_DECREASE
