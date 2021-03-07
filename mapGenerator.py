@@ -5,8 +5,8 @@ from roadTile import RoadTile
 from landTile import LandTile
 from flag import Flag
 
-LIKELIHOOD_OF_TURNS = .5
-MIN_TILES_BETWEEN_TURNS =10
+LIKELIHOOD_OF_TURNS = .7
+MIN_TILES_BETWEEN_TURNS = 10
 
 class MapGenerator:
     def __init__(self, tileSize, numOfTilesX, numOfTilesY):
@@ -72,8 +72,6 @@ class MapGenerator:
 
         xTileCurr += (-yTileChange * (roadWidth / 2))
         yTileCurr += (xTileChange * (roadWidth / 2))
-
-        # ythTile = yTileCurr + (xTileChange * j)
 
         flagX = xTileCurr * self.tileSize + 2 * (-xTileChange * self.tileSize)
         flagY = yTileCurr * self.tileSize + 2 * (-yTileChange * self.tileSize)
